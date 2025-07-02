@@ -21,11 +21,9 @@ class DataPreprocessor:
     #             lambda x: ' '.join([word for word in word_tokenize(x) if word.lower() not in stop_words])
     #         )
 
-    def tokenize(self, column = "text"):
+    def tokenize(self, column="text"):
         if column in self.data.columns:
-            self.data[column] = self.data[column].astype(str).apply(
-                lambda x : word_tokenize(x) if isinstance(x, str) else []
-            )
+            self.data[column] = self.data[column].apply(lambda x: ' '.join(x) if isinstance(x, list) else str(x))
 
 
     def clean_text(self, column = "text"):
@@ -45,4 +43,3 @@ class DataPreprocessor:
 df = DataPreprocessor('../data/track-b.csv')
 df.preprocess()
 df.data
-
