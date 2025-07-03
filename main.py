@@ -1,30 +1,13 @@
 import torch
-import pandas as pd
+import numpy as np
 import os
 import sys
 from transformers import DistilBertTokenizerFast, DistilBertModel
 sys.path.append(os.path.abspath('..'))
 import torch.nn as nn
-
+from utils.emotion_regressor import EmotionRegressor  
 from utils.data_preprocessing import DataPreprocessor# Assuming you have a data preprocessing module
 
-class EmotionRegressor(nn.Module):
-    def __init__(self, dropout=0.5, num_emotions=5):
-        super().__init__()
-        self.bert = DistilBertModel.from_pretrained("distilbert-base-uncased")
-        self.dropout = nn.Dropout(dropout)
-        self.regressor = nn.Sequential(
-            nn.Linear(self.bert.config.hidden_size, 256),
-            nn.ReLU(),
-            nn.Dropout(0.3),
-            nn.Linear(256, num_emotions)
-        )
-
-    def forward(self, input_ids, attention_mask):
-        output = self.bert(input_ids=input_ids, attention_mask=attention_mask)
-        pooled = output.last_hidden_state[:, 0]  # [CLS] token
-        pooled = self.dropout(pooled)
-        return self.regressor(pooled)
 
 
 def preprocess_texts(texts, tokenizer, max_len=64):
@@ -41,12 +24,12 @@ def preprocess_texts(texts, tokenizer, max_len=64):
     return encodings
 
 def score_to_intensity(score):
-    score = max(0, score)  # clip negatives to zero
-    if score <= 0.25:
+    score = max(0, score)  # clip negatives to 0
+    if score <= 0.5:
         return 0
-    elif score <= 0.5 and score > 0.25:
+    elif score > 0.5 and score <= 1.5:
         return 1
-    elif score <= 0.75 and score > 0.5:
+    elif score > 1.5 and score <= 2.5:
         return 2
     else:
         return 3
@@ -57,7 +40,7 @@ def predict(csv_path):
     # Load tokenizer and model
     tokenizer = DistilBertTokenizerFast.from_pretrained("distilbert-base-uncased")
     model = EmotionRegressor()
-    model.load_state_dict(torch.load("./notebooks/model/emotion_classifier_model.pt", map_location=device))
+    model.load_state_dict(torch.load("./notebooks/model/emotion_classifier_model_2.pt", map_location=device))
     model.to(device)
     model.eval()
 
@@ -76,19 +59,19 @@ def predict(csv_path):
         outputs = model(input_ids, attention_mask)
         preds = outputs.cpu().numpy()
     
-    # intensity_preds = []
-    # for sample_scores in preds:
-    #     intensity_sample = [score_to_intensity(score) for score in sample_scores]
-    #     intensity_preds.append(intensity_sample)
+    intensity_preds = []
+    for sample_scores in preds:
+        intensity_sample = [score_to_intensity(score) for score in sample_scores]
+        intensity_preds.append(intensity_sample)
     
-    return preds
+    return intensity_preds
 
 
 if __name__ == "__main__":
     # if len(sys.argv) != 2:
     #     print("Usage: python main.py <path_to_csv>")
     #     sys.exit(1)
-    csv_path = "./data/track-b.csv" # Replace with your actual CSV file path
+    csv_path = "./data/test_data.csv" # Replace with your actual CSV file path
     predictions = predict(csv_path)
     print(predictions)  # This will print the predictions for each emotion
     
