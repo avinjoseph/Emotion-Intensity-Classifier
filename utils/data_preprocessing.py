@@ -2,6 +2,7 @@ import pandas as pd
 import re
 from nltk.tokenize import word_tokenize
 
+
 class DataPreprocessor:
     def __init__(self, file_path):
         self.data = pd.read_csv(file_path)
@@ -39,7 +40,3 @@ class DataPreprocessor:
     
     
     
-
-df = DataPreprocessor('../data/track-b.csv')
-df.preprocess()
-df.data
