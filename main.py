@@ -1,13 +1,11 @@
 import torch
-import numpy as np
 import os
 import sys
-from transformers import DistilBertTokenizerFast, DistilBertModel
+from transformers import DistilBertTokenizerFast
 sys.path.append(os.path.abspath('..'))
 import torch.nn as nn
 from utils.emotion_regressor import EmotionRegressor  
-from utils.data_preprocessing import DataPreprocessor# Assuming you have a data preprocessing module
-
+from utils.data_preprocessing import DataPreprocessor
 
 
 def preprocess_texts(texts, tokenizer, max_len=64):
@@ -23,6 +21,8 @@ def preprocess_texts(texts, tokenizer, max_len=64):
     )
     return encodings
 
+# Convert score to intensity level
+# 0: No emotion, 1: Low intensity, 2: Medium intensity,
 def score_to_intensity(score):
     score = max(0, score)  # clip negatives to 0
     if score <= 0.5:
@@ -49,7 +49,6 @@ def predict(csv_path):
     df.preprocess() 
     data = df.data
 
-    # Preprocess text column (adjust column name if needed)
     encodings = preprocess_texts(data['text'].to_list(), tokenizer)
 
     input_ids = encodings['input_ids'].to(device)
@@ -71,10 +70,9 @@ if __name__ == "__main__":
     # if len(sys.argv) != 2:
     #     print("Usage: python main.py <path_to_csv>")
     #     sys.exit(1)
-    csv_path = "./data/test_data.csv" # Replace with your actual CSV file path
+    csv_path = "./data/test_data.csv" 
     predictions = predict(csv_path)
-    print(predictions)  # This will print the predictions for each emotion
-    
+    print(predictions)  
     
     
 

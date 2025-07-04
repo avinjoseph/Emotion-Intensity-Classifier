@@ -1,6 +1,8 @@
 import torch.nn as nn
 from transformers import DistilBertModel
 
+# EmotionRegressor is a custom model that uses DistilBERT for emotion regression tasks.
+# It inherits from nn.Module and implements the forward method to process input text and output emotion scores
 class EmotionRegressor(nn.Module):
     def __init__(self, dropout=0.5, num_emotions=5):
         super().__init__()
