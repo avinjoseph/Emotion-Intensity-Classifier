@@ -40,7 +40,7 @@ def predict(csv_path):
     # Load tokenizer and model
     tokenizer = DistilBertTokenizerFast.from_pretrained("distilbert-base-uncased")
     model = EmotionRegressor()
-    model.load_state_dict(torch.load("./notebooks/model/emotion_classifier_model_2.pt", map_location=device))
+    model.load_state_dict(torch.load("./notebooks/model/emotion_classifier_model_2.pt", map_location=device, weights_only=True))
     model.to(device)
     model.eval()
 
