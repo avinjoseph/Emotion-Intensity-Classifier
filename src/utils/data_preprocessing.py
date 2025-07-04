@@ -1,10 +1,17 @@
 import pandas as pd
 import re
-
+import os
 
 class DataPreprocessor:
-    def __init__(self, file_path):
-        self.data = pd.read_csv(file_path)
+    def __init__(self, input_data):
+        if isinstance(input_data, str) and os.path.exists(input_data):
+            self.data = pd.read_csv(input_data)
+        elif isinstance(input_data, str):
+            self.data = pd.DataFrame({'text': [input_data]})
+        elif isinstance(input_data, pd.DataFrame):
+            self.data = input_data
+        else:
+            raise ValueError("Input must be a file path or a pandas DataFrame.")
         
     def lower_case(self, column = "text"):
         if column in self.data.columns:

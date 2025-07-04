@@ -40,7 +40,7 @@ def predict(csv_path):
     # Load tokenizer and model
     tokenizer = DistilBertTokenizerFast.from_pretrained("distilbert-base-uncased")
     model = EmotionRegressor()
-    model.load_state_dict(torch.load("./notebooks/model/emotion_classifier_model_2.pt", map_location=device, weights_only=True))
+    model.load_state_dict(torch.load("D:/Emotion-Intensity-Classifier/src/notebooks/model/emotion_classifier_model_2.pt", map_location=device, weights_only=True))
     model.to(device)
     model.eval()
 
@@ -70,8 +70,8 @@ if __name__ == "__main__":
     # if len(sys.argv) != 2:
     #     print("Usage: python main.py <path_to_csv>")
     #     sys.exit(1)
-    csv_path = "./data/test_data.csv" 
-    predictions = predict(csv_path)
+    csv_path = "../data/test_data.csv" 
+    predictions = predict("I am feeling very happy today. I am so excited about the new project we are working on. It's going to be amazing! I can't wait to see the results. I am also a bit nervous, but I know we can do it together. Let's make it happen!")
     print(predictions)  
     
     
