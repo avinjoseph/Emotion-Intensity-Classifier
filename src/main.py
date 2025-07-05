@@ -4,6 +4,7 @@ import sys
 from transformers import DistilBertTokenizerFast
 sys.path.append(os.path.abspath('..'))
 import torch.nn as nn
+from pathlib import Path
 from utils.emotion_regressor import EmotionRegressor  
 from utils.data_preprocessing import DataPreprocessor
 
@@ -38,9 +39,10 @@ def predict(csv_path):
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     # Load tokenizer and model
+    model_path = Path("./notebooks/model/emotion_classifier_model_2.pt")
     tokenizer = DistilBertTokenizerFast.from_pretrained("distilbert-base-uncased")
     model = EmotionRegressor()
-    model.load_state_dict(torch.load("D:/Emotion-Intensity-Classifier/src/notebooks/model/emotion_classifier_model_2.pt", map_location=device, weights_only=True))
+    model.load_state_dict(torch.load(model_path, map_location=device, weights_only=True))
     model.to(device)
     model.eval()
 
